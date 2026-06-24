@@ -206,43 +206,45 @@ function fmtDate(d) {
 
                 <div class="divide-y divide-amber-100">
                     <div v-for="t in pending" :key="t.id"
-                        class="flex items-center gap-3 px-4 py-3 hover:bg-amber-100/50 transition-colors group">
-                        <!-- Categoría -->
-                        <span class="w-8 h-8 rounded-lg flex items-center justify-center text-white text-xs font-bold shrink-0"
-                            :style="{ backgroundColor: t.category.color ?? '#6366f1' }">
-                            {{ t.category.icon || t.category.name.charAt(0) }}
-                        </span>
-                        <div class="flex-1 min-w-0">
-                            <p class="text-sm font-medium text-gray-800">{{ t.category.name }}</p>
-                            <p class="text-xs text-gray-500">{{ t.member.name }} · {{ fmtDate(t.date) }}
-                                <span v-if="t.description"> · {{ t.description }}</span>
-                            </p>
-                        </div>
-                        <span class="text-sm font-bold text-amber-700 shrink-0">{{ fmt(t.amount) }}</span>
+                        class="px-4 py-3 hover:bg-amber-100/50 transition-colors">
 
-                        <!-- Acciones -->
-                        <div class="flex items-center gap-1 shrink-0">
-                            <!-- Confirmar -->
+                        <!-- Info -->
+                        <div class="flex items-center gap-3">
+                            <span class="w-8 h-8 rounded-lg flex items-center justify-center text-white text-xs font-bold shrink-0"
+                                :style="{ backgroundColor: t.category.color ?? '#6366f1' }">
+                                {{ t.category.icon || t.category.name.charAt(0) }}
+                            </span>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-sm font-medium text-gray-800">{{ t.category.name }}</p>
+                                <p class="text-xs text-gray-500 truncate">{{ t.member.name }} · {{ fmtDate(t.date) }}
+                                    <span v-if="t.description"> · {{ t.description }}</span>
+                                </p>
+                            </div>
+                            <span class="text-sm font-bold text-amber-700 shrink-0">{{ fmt(t.amount) }}</span>
+                        </div>
+
+                        <!-- Acciones (siempre visibles) -->
+                        <div class="flex items-center gap-2 mt-2">
                             <button @click="confirmTransaction(t)"
-                                class="flex items-center gap-1 bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-medium px-2.5 py-1.5 rounded-lg transition-colors">
+                                class="flex items-center gap-1.5 bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-medium px-3 py-1.5 rounded-lg transition-colors">
                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
                                 </svg>
                                 Confirmar
                             </button>
-                            <!-- Editar -->
                             <button @click="openEdit(t)"
-                                class="p-1.5 text-gray-400 hover:text-indigo-600 opacity-0 group-hover:opacity-100 transition-opacity rounded">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                class="flex items-center gap-1.5 border border-gray-200 text-gray-600 text-xs font-medium px-3 py-1.5 rounded-lg hover:border-indigo-400 hover:text-indigo-600 transition-colors">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536M9 13l6.5-6.5a2 2 0 112.828 2.828L11.828 15.828a2 2 0 01-1.414.586H9v-2a2 2 0 01.586-1.414z" />
                                 </svg>
+                                Editar
                             </button>
-                            <!-- Eliminar -->
                             <button @click="destroy(t)"
-                                class="p-1.5 text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity rounded">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                class="flex items-center gap-1.5 border border-gray-200 text-gray-600 text-xs font-medium px-3 py-1.5 rounded-lg hover:border-red-400 hover:text-red-500 transition-colors">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M9 7h6m-7 0a1 1 0 01-1-1V5a1 1 0 011-1h8a1 1 0 011 1v1a1 1 0 01-1 1H9z" />
                                 </svg>
+                                Eliminar
                             </button>
                         </div>
                     </div>
@@ -276,17 +278,58 @@ function fmtDate(d) {
                 class="text-xs font-medium px-3 py-1.5 rounded-full transition-colors">{{ m.name }}</button>
         </div>
 
-        <!-- ── Tabla historial confirmado ────────────────────────────── -->
-        <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
-            <div v-if="filtered.length === 0" class="p-8 text-center text-sm text-gray-400 italic">
-                Sin transacciones confirmadas en este período.
+        <!-- ── Historial confirmado ──────────────────────────────────── -->
+        <div v-if="filtered.length === 0" class="bg-white rounded-xl border border-gray-100 shadow-sm p-8 text-center text-sm text-gray-400 italic">
+            Sin transacciones confirmadas en este período.
+        </div>
+
+        <!-- Vista mobile: tarjetas -->
+        <div v-else class="sm:hidden space-y-2">
+            <div v-for="t in filtered" :key="t.id"
+                class="bg-white rounded-xl border border-gray-100 shadow-sm px-4 py-3 flex items-center gap-3">
+                <!-- Ícono categoría -->
+                <span class="w-9 h-9 rounded-xl flex items-center justify-center text-white text-sm font-bold shrink-0"
+                    :style="{ backgroundColor: t.category.color ?? '#6366f1' }">
+                    {{ t.category.icon || t.category.name.charAt(0) }}
+                </span>
+
+                <!-- Contenido -->
+                <div class="flex-1 min-w-0">
+                    <p class="text-sm font-semibold text-gray-800 truncate">{{ t.category.name }}</p>
+                    <p class="text-xs text-gray-400 truncate">
+                        {{ t.member.name }} · {{ fmtDate(t.date) }}
+                        <span v-if="t.description"> · {{ t.description }}</span>
+                    </p>
+                </div>
+
+                <!-- Monto + acciones -->
+                <div class="flex items-center gap-2 shrink-0">
+                    <span class="text-sm font-bold"
+                        :class="t.type === 'income' ? 'text-emerald-600' : 'text-red-500'">
+                        {{ t.type === 'income' ? '+' : '-' }}{{ fmt(t.amount) }}
+                    </span>
+                    <button @click="openEdit(t)" class="p-1.5 text-gray-400 hover:text-indigo-500 transition-colors">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536M9 13l6.5-6.5a2 2 0 112.828 2.828L11.828 15.828a2 2 0 01-1.414.586H9v-2a2 2 0 01.586-1.414z" />
+                        </svg>
+                    </button>
+                    <button @click="destroy(t)" class="p-1.5 text-gray-400 hover:text-red-500 transition-colors">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M9 7h6m-7 0a1 1 0 01-1-1V5a1 1 0 011-1h8a1 1 0 011 1v1a1 1 0 01-1 1H9z" />
+                        </svg>
+                    </button>
+                </div>
             </div>
-            <table v-else class="w-full text-sm">
+        </div>
+
+        <!-- Vista desktop: tabla -->
+        <div v-if="filtered.length > 0" class="hidden sm:block bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+            <table class="w-full text-sm">
                 <thead class="bg-gray-50 border-b border-gray-100">
                     <tr>
                         <th class="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Fecha</th>
                         <th class="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Categoría</th>
-                        <th class="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide hidden sm:table-cell">Miembro</th>
+                        <th class="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Miembro</th>
                         <th class="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide hidden md:table-cell">Descripción</th>
                         <th class="text-right px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Monto</th>
                         <th class="px-4 py-3"></th>
@@ -304,7 +347,7 @@ function fmtDate(d) {
                                 <span class="text-gray-700">{{ t.category.name }}</span>
                             </div>
                         </td>
-                        <td class="px-4 py-3 text-gray-500 hidden sm:table-cell">{{ t.member.name }}</td>
+                        <td class="px-4 py-3 text-gray-500">{{ t.member.name }}</td>
                         <td class="px-4 py-3 text-gray-400 hidden md:table-cell">{{ t.description || '—' }}</td>
                         <td class="px-4 py-3 text-right font-semibold whitespace-nowrap"
                             :class="t.type === 'income' ? 'text-emerald-600' : 'text-red-500'">
