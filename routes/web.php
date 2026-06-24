@@ -6,6 +6,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\InstallmentPlanController;
 use App\Http\Controllers\MemberController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Auth\SocialAuthController;
 use App\Http\Controllers\TransactionController;
 use Illuminate\Support\Facades\Route;
 
@@ -44,5 +45,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/join/{code}', [MemberController::class, 'showJoin'])->name('members.showJoin');
     Route::post('/join/{code}', [MemberController::class, 'acceptJoin'])->name('members.acceptJoin');
 });
+
+Route::get('/auth/{provider}/redirect', [SocialAuthController::class, 'redirect'])->name('social.redirect');
+Route::get('/auth/{provider}/callback', [SocialAuthController::class, 'callback'])->name('social.callback');
 
 require __DIR__.'/auth.php';
