@@ -176,14 +176,14 @@ function fmtDate(d) {
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.5v15m7.5-7.5h-15" />
                     </svg>
-                    Ingreso
+                    <span class="hidden sm:inline">Ingreso</span>
                 </button>
                 <button @click="openCreate('expense')"
                     class="inline-flex items-center gap-1.5 bg-red-500 hover:bg-red-600 text-white text-sm font-medium px-3 py-2 rounded-lg transition-colors">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.5v15m7.5-7.5h-15" />
                     </svg>
-                    Egreso
+                    <span class="hidden sm:inline">Egreso</span>
                 </button>
             </div>
         </div>
